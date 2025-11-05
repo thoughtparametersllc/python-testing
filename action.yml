@@ -1,0 +1,475 @@
+name: Python Testing
+description: Auto-detect and run Python testing frameworks (pytest, unittest, nose, tox, behave, doctest).
+author: Jason Miller
+
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  python-version:
+    description: Python version to use for testing. If not specified, uses the default Python available on the runner.
+    required: false
+    default: '3.x'
+
+  requirements-file:
+    description: Path to a requirements file to install before testing. If not specified, only detected test frameworks will be installed.
+    required: false
+    default: ''
+
+  pytest-options:
+    description: Options to pass to pytest if detected.
+    required: false
+    default: ''
+
+  unittest-options:
+    description: Options to pass to unittest if detected.
+    required: false
+    default: ''
+
+  nose-options:
+    description: Options to pass to nose2 if detected.
+    required: false
+    default: ''
+
+  behave-options:
+    description: Options to pass to behave if detected.
+    required: false
+    default: ''
+
+  tox-options:
+    description: Options to pass to tox if detected.
+    required: false
+    default: ''
+
+  generate-badges:
+    description: Generate SVG badges for test results and commit them to the repository.
+    required: false
+    default: 'false'
+
+  badges-directory:
+    description: Directory where badge SVG files will be saved (relative to repository root).
+    required: false
+    default: '.github/badges'
+
+  update-readme:
+    description: Automatically update README.md with badge references.
+    required: false
+    default: 'false'
+
+  readme-path:
+    description: Path to README.md file to update with badges.
+    required: false
+    default: 'README.md'
+
+  badge-style:
+    description: Badge style - 'url' for GitHub URLs or 'path' for relative paths.
+    required: false
+    default: 'path'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Detect Testing Frameworks
+      id: detect
+      run: |
+        echo "Detecting testing frameworks..."
+        
+        # Initialize detection flags
+        PYTEST_DETECTED=false
+        UNITTEST_DETECTED=false
+        NOSE_DETECTED=false
+        BEHAVE_DETECTED=false
+        TOX_DETECTED=false
+        DOCTEST_DETECTED=false
+        
+        # Detect pytest
+        if [ -f "pytest.ini" ] || [ -f "pyproject.toml" ] || [ -f "setup.cfg" ] || grep -r "import pytest" --include="*.py" . 2>/dev/null | head -1; then
+          echo "✓ pytest detected"
+          PYTEST_DETECTED=true
+        fi
+        
+        # Detect unittest
+        if grep -r "import unittest" --include="test*.py" --include="*test.py" . 2>/dev/null | head -1; then
+          echo "✓ unittest detected"
+          UNITTEST_DETECTED=true
+        fi
+        
+        # Detect nose/nose2
+        if [ -f ".noserc" ] || [ -f "nose.cfg" ] || ([ -f "setup.cfg" ] && grep -q "\[nosetests\]" setup.cfg 2>/dev/null); then
+          echo "✓ nose2 detected"
+          NOSE_DETECTED=true
+        fi
+        
+        # Detect behave (Cucumber-style BDD)
+        if [ -d "features" ] && ls features/*.feature 2>/dev/null | head -1; then
+          echo "✓ behave detected (BDD/Cucumber)"
+          BEHAVE_DETECTED=true
+        fi
+        
+        # Detect tox
+        if [ -f "tox.ini" ]; then
+          echo "✓ tox detected"
+          TOX_DETECTED=true
+        fi
+        
+        # Detect doctest (check for docstring tests)
+        if grep -r ">>>" --include="*.py" . 2>/dev/null | head -1; then
+          echo "✓ doctest detected"
+          DOCTEST_DETECTED=true
+        fi
+        
+        # Export detection results
+        echo "PYTEST_DETECTED=$PYTEST_DETECTED" >> $GITHUB_ENV
+        echo "UNITTEST_DETECTED=$UNITTEST_DETECTED" >> $GITHUB_ENV
+        echo "NOSE_DETECTED=$NOSE_DETECTED" >> $GITHUB_ENV
+        echo "BEHAVE_DETECTED=$BEHAVE_DETECTED" >> $GITHUB_ENV
+        echo "TOX_DETECTED=$TOX_DETECTED" >> $GITHUB_ENV
+        echo "DOCTEST_DETECTED=$DOCTEST_DETECTED" >> $GITHUB_ENV
+        
+        # Summary
+        echo "## Test Framework Detection :mag:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- pytest: $PYTEST_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "- unittest: $UNITTEST_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "- nose2: $NOSE_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "- behave: $BEHAVE_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "- tox: $TOX_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "- doctest: $DOCTEST_DETECTED" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+      shell: bash
+
+    - name: Install Testing Frameworks
+      run: |
+        echo "Installing detected testing frameworks..."
+        
+        if [ "$PYTEST_DETECTED" == "true" ]; then
+          pip3 install pytest pytest-cov
+          echo "✓ Installed pytest"
+        fi
+        
+        if [ "$UNITTEST_DETECTED" == "true" ]; then
+          # unittest is built-in, but install coverage for it
+          pip3 install coverage
+          echo "✓ unittest (built-in) - installed coverage"
+        fi
+        
+        if [ "$NOSE_DETECTED" == "true" ]; then
+          pip3 install nose2
+          echo "✓ Installed nose2"
+        fi
+        
+        if [ "$BEHAVE_DETECTED" == "true" ]; then
+          pip3 install behave
+          echo "✓ Installed behave"
+        fi
+        
+        if [ "$TOX_DETECTED" == "true" ]; then
+          pip3 install tox
+          echo "✓ Installed tox"
+        fi
+        
+        # doctest is built-in, no installation needed
+      shell: bash
+
+    - name: Install additional requirements
+      run: |
+        if [ -f "${{ inputs.requirements-file }}" ]; then
+          pip3 install -r "${{ inputs.requirements-file }}"
+          echo "✓ Installed requirements from ${{ inputs.requirements-file }}"
+        elif [ "${{ inputs.requirements-file }}" != "" ]; then
+          echo "Warning: Requirements file not found: ${{ inputs.requirements-file }}"
+          echo "Skipping additional requirements installation."
+        fi
+      shell: bash
+      if: inputs.requirements-file != ''
+
+    - name: Run pytest
+      run: |
+        echo "Running pytest..."
+        pytest ${{ inputs.pytest-options }} --verbose --tb=short 2>&1 | tee pytest_output.txt
+        echo "PYTEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+      shell: bash
+      if: env.PYTEST_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report pytest results
+      run: |
+        echo "## pytest :test_tube:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat pytest_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f pytest_output.txt
+      shell: bash
+      if: env.PYTEST_DETECTED == 'true'
+
+    - name: Run unittest
+      run: |
+        echo "Running unittest..."
+        python3 -m unittest discover ${{ inputs.unittest-options }} -v 2>&1 | tee unittest_output.txt
+        echo "UNITTEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+      shell: bash
+      if: env.UNITTEST_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report unittest results
+      run: |
+        echo "## unittest :test_tube:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat unittest_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f unittest_output.txt
+      shell: bash
+      if: env.UNITTEST_DETECTED == 'true'
+
+    - name: Run nose2
+      run: |
+        echo "Running nose2..."
+        nose2 ${{ inputs.nose-options }} --verbose 2>&1 | tee nose_output.txt
+        echo "NOSE_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+      shell: bash
+      if: env.NOSE_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report nose2 results
+      run: |
+        echo "## nose2 :test_tube:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat nose_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f nose_output.txt
+      shell: bash
+      if: env.NOSE_DETECTED == 'true'
+
+    - name: Run behave
+      run: |
+        echo "Running behave..."
+        behave ${{ inputs.behave-options }} --verbose 2>&1 | tee behave_output.txt
+        echo "BEHAVE_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+      shell: bash
+      if: env.BEHAVE_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report behave results
+      run: |
+        echo "## behave :cucumber:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat behave_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f behave_output.txt
+      shell: bash
+      if: env.BEHAVE_DETECTED == 'true'
+
+    - name: Run tox
+      run: |
+        echo "Running tox..."
+        tox ${{ inputs.tox-options }} 2>&1 | tee tox_output.txt
+        echo "TOX_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+      shell: bash
+      if: env.TOX_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report tox results
+      run: |
+        echo "## tox :package:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat tox_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f tox_output.txt
+      shell: bash
+      if: env.TOX_DETECTED == 'true'
+
+    - name: Run doctest
+      run: |
+        echo "Running doctest..."
+        # Find Python files excluding common virtual environment and build directories
+        PY_FILES=$(find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./build/*" -not -path "./dist/*" -not -path "./.tox/*" -not -path "./node_modules/*" 2>/dev/null || true)
+        
+        if [ -n "$PY_FILES" ]; then
+          echo "$PY_FILES" | xargs python3 -m doctest -v 2>&1 | tee doctest_output.txt
+          echo "DOCTEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+        else
+          echo "No Python files found for doctest"
+          echo "DOCTEST_EXIT_CODE=0" >> $GITHUB_ENV
+        fi
+      shell: bash
+      if: env.DOCTEST_DETECTED == 'true'
+      continue-on-error: true
+
+    - name: Report doctest results
+      run: |
+        echo "## doctest :memo:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```text' >> $GITHUB_STEP_SUMMARY
+        cat doctest_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        rm -f doctest_output.txt
+      shell: bash
+      if: env.DOCTEST_DETECTED == 'true'
+
+    - name: Generate SVG badges
+      run: |
+        if [ "${{ inputs.generate-badges }}" == "true" ]; then
+          mkdir -p "${{ inputs.badges-directory }}"
+          
+          # Function to create badge
+          create_badge() {
+            local name=$1
+            local status=$2
+            local color=$3
+            local file=$4
+            
+            cat > "$file" << 'EOF'
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="20">
+          <linearGradient id="b" x2="0" y2="100%">
+            <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+            <stop offset="1" stop-opacity=".1"/>
+          </linearGradient>
+          <clipPath id="a">
+            <rect width="120" height="20" rx="3" fill="#fff"/>
+          </clipPath>
+          <g clip-path="url(#a)">
+            <path fill="#555" d="M0 0h60v20H0z"/>
+            <path fill="COLOR" d="M60 0h60v20H60z"/>
+            <path fill="url(#b)" d="M0 0h120v20H0z"/>
+          </g>
+          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">
+            <text x="30" y="15" fill="#010101" fill-opacity=".3">NAME</text>
+            <text x="30" y="14">NAME</text>
+            <text x="90" y="15" fill="#010101" fill-opacity=".3">STATUS</text>
+            <text x="90" y="14">STATUS</text>
+          </g>
+        </svg>
+        EOF
+            sed -i "s/NAME/$name/g; s/STATUS/$status/g; s/COLOR/$color/g" "$file"
+          }
+          
+          # Create badges for detected frameworks
+          if [ "$PYTEST_DETECTED" == "true" ]; then
+            PYTEST_STATUS="passing"
+            PYTEST_COLOR="#4c1"
+            [ "${PYTEST_EXIT_CODE:-0}" != "0" ] && PYTEST_STATUS="failing" && PYTEST_COLOR="#e05d44"
+            create_badge "pytest" "$PYTEST_STATUS" "$PYTEST_COLOR" "${{ inputs.badges-directory }}/pytest.svg"
+          fi
+          
+          if [ "$UNITTEST_DETECTED" == "true" ]; then
+            UNITTEST_STATUS="passing"
+            UNITTEST_COLOR="#4c1"
+            [ "${UNITTEST_EXIT_CODE:-0}" != "0" ] && UNITTEST_STATUS="failing" && UNITTEST_COLOR="#e05d44"
+            create_badge "unittest" "$UNITTEST_STATUS" "$UNITTEST_COLOR" "${{ inputs.badges-directory }}/unittest.svg"
+          fi
+          
+          if [ "$NOSE_DETECTED" == "true" ]; then
+            NOSE_STATUS="passing"
+            NOSE_COLOR="#4c1"
+            [ "${NOSE_EXIT_CODE:-0}" != "0" ] && NOSE_STATUS="failing" && NOSE_COLOR="#e05d44"
+            create_badge "nose2" "$NOSE_STATUS" "$NOSE_COLOR" "${{ inputs.badges-directory }}/nose2.svg"
+          fi
+          
+          if [ "$BEHAVE_DETECTED" == "true" ]; then
+            BEHAVE_STATUS="passing"
+            BEHAVE_COLOR="#4c1"
+            [ "${BEHAVE_EXIT_CODE:-0}" != "0" ] && BEHAVE_STATUS="failing" && BEHAVE_COLOR="#e05d44"
+            create_badge "behave" "$BEHAVE_STATUS" "$BEHAVE_COLOR" "${{ inputs.badges-directory }}/behave.svg"
+          fi
+          
+          if [ "$TOX_DETECTED" == "true" ]; then
+            TOX_STATUS="passing"
+            TOX_COLOR="#4c1"
+            [ "${TOX_EXIT_CODE:-0}" != "0" ] && TOX_STATUS="failing" && TOX_COLOR="#e05d44"
+            create_badge "tox" "$TOX_STATUS" "$TOX_COLOR" "${{ inputs.badges-directory }}/tox.svg"
+          fi
+          
+          if [ "$DOCTEST_DETECTED" == "true" ]; then
+            DOCTEST_STATUS="passing"
+            DOCTEST_COLOR="#4c1"
+            [ "${DOCTEST_EXIT_CODE:-0}" != "0" ] && DOCTEST_STATUS="failing" && DOCTEST_COLOR="#e05d44"
+            create_badge "doctest" "$DOCTEST_STATUS" "$DOCTEST_COLOR" "${{ inputs.badges-directory }}/doctest.svg"
+          fi
+          
+          echo "✓ Generated SVG badges in ${{ inputs.badges-directory }}"
+        fi
+      shell: bash
+      if: always()
+
+    - name: Update README with badges
+      run: |
+        if [ "${{ inputs.update-readme }}" == "true" ]; then
+          SCRIPT_DIR="${{ github.action_path }}"
+          
+          # Build framework list for the script
+          FRAMEWORKS=""
+          [ "$PYTEST_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS pytest"
+          [ "$UNITTEST_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS unittest"
+          [ "$NOSE_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS nose2"
+          [ "$BEHAVE_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS behave"
+          [ "$TOX_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS tox"
+          [ "$DOCTEST_DETECTED" == "true" ] && FRAMEWORKS="$FRAMEWORKS doctest"
+          
+          # Run the script with properly quoted arguments
+          if [ "${{ inputs.badge-style }}" == "url" ]; then
+            python3 "${SCRIPT_DIR}/update_badges.py" \
+              --readme "${{ inputs.readme-path }}" \
+              --badges-dir "${{ inputs.badges-directory }}" \
+              --use-url \
+              --github-repo "${{ github.repository }}" \
+              --frameworks $FRAMEWORKS
+          else
+            python3 "${SCRIPT_DIR}/update_badges.py" \
+              --readme "${{ inputs.readme-path }}" \
+              --badges-dir "${{ inputs.badges-directory }}" \
+              --frameworks $FRAMEWORKS
+          fi
+          
+          echo "✓ Updated ${{ inputs.readme-path }} with badge references"
+        fi
+      shell: bash
+      if: always()
+
+    - name: Commit badges to repository
+      run: |
+        if [ "${{ inputs.generate-badges }}" == "true" ] || [ "${{ inputs.update-readme }}" == "true" ]; then
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add badge files if they exist
+          if [ "${{ inputs.generate-badges }}" == "true" ]; then
+            git add "${{ inputs.badges-directory }}/*.svg" || true
+          fi
+          
+          # Add README if it was updated
+          if [ "${{ inputs.update-readme }}" == "true" ]; then
+            git add "${{ inputs.readme-path }}" || true
+          fi
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update test badges [skip ci]"
+            if git push; then
+              echo "✓ Changes committed and pushed to repository"
+            else
+              echo "⚠ Warning: Failed to push changes. This may be due to insufficient permissions or a merge conflict."
+              echo "Please ensure the workflow has write permissions to the repository."
+              exit 0
+            fi
+          fi
+        fi
+      shell: bash
+      if: always()
