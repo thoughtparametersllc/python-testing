@@ -101,7 +101,7 @@ runs:
         fi
         
         # Detect nose/nose2
-        if [ -f ".noserc" ] || [ -f "nose.cfg" ] || [ -f "setup.cfg" ] && grep -q "\[nosetests\]" setup.cfg 2>/dev/null; then
+        if [ -f ".noserc" ] || [ -f "nose.cfg" ] || ([ -f "setup.cfg" ] && grep -q "\[nosetests\]" setup.cfg 2>/dev/null); then
           echo "✓ nose2 detected"
           NOSE_DETECTED=true
         fi
@@ -297,8 +297,16 @@ runs:
     - name: Run doctest
       run: |
         echo "Running doctest..."
-        python3 -m doctest -v $(find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./build/*" -not -path "./dist/*") 2>&1 | tee doctest_output.txt
-        echo "DOCTEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+        # Find Python files excluding common virtual environment and build directories
+        PY_FILES=$(find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./build/*" -not -path "./dist/*" -not -path "./.tox/*" -not -path "./node_modules/*" 2>/dev/null || true)
+        
+        if [ -n "$PY_FILES" ]; then
+          echo "$PY_FILES" | xargs python3 -m doctest -v 2>&1 | tee doctest_output.txt
+          echo "DOCTEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+        else
+          echo "No Python files found for doctest"
+          echo "DOCTEST_EXIT_CODE=0" >> $GITHUB_ENV
+        fi
       shell: bash
       if: env.DOCTEST_DETECTED == 'true'
       continue-on-error: true
