@@ -17,6 +17,6 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Run Python Tests
-        uses: thoughtparametersllc/python-testing@copilot/add-auto-detect-test-framework
+        uses: thoughtparametersllc/python-testing@947908abd1dab777628becca5b772f26735e8146
         with:
           python-version: '3.x'

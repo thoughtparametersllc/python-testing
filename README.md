@@ -28,7 +28,7 @@ GitHub Action to automatically detect and run Python testing frameworks.
 
 ## Usage
 
-> **Note:** Replace `@v1` with `@main` or a specific commit SHA (e.g., `@a1b2c3d`) until the first release is tagged. Once v1.0.0 is released, you can use `@v1` for the latest v1.x version.
+> **Note:** Until the first release is tagged, use a specific commit SHA (e.g., `@947908a`) instead of `@v1`. This ensures workflows continue to work even if development branches are deleted. Once v1.0.0 is released, you can use `@v1` for the latest v1.x version.
 
 ### Basic Example
 
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Run Python Tests
-        uses: thoughtparametersllc/python-testing@v1  # or @main before first release
+        uses: thoughtparametersllc/python-testing@v1  # or @<commit-sha> before first release
 ```
 
 ### Advanced Example with All Options
