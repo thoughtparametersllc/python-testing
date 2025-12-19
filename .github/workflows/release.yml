@@ -243,7 +243,7 @@ jobs:
           echo "5. Click 'Update release'"
           echo ""
           echo "The action.yml already includes marketplace metadata:"
-          echo "  - Name: Python Testing"
+          echo "  - Name: Python Unit Testing"
           echo "  - Description: Run Python tests using pytest, generate SVG badges for test results, and optionally commit the badges to the repository."
           echo "  - Author: Jason Miller"
           echo "  - Branding: check-circle icon, green color"

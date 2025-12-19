@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive summary of the Python Testing GitHub Action implementation.
+This document provides a comprehensive summary of the Python Unit Testing GitHub Action implementation.
 
 ## What Was Built
 
