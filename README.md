@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Python%20Testing-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=github)](https://github.com/marketplace/actions/python-testing)
 
-GitHub Action to automatically detect and run Python testing frameworks.
+GitHub Action to run Python tests using pytest.
 
 ## Features
 

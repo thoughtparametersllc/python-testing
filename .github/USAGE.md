@@ -27,7 +27,7 @@ jobs:
       - uses: thoughtparametersllc/python-testing@v1
 ```
 
-That's it! The action will automatically detect and run your testing frameworks.
+That's it! The action will install pytest and run your tests.
 
 ## Testing Framework
 

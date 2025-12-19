@@ -16,8 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated README.md to accurately reflect actual action.yml inputs and functionality
+- Updated README.md description from "automatically detect and run Python testing frameworks" to
+  "run Python tests using pytest"
 - Updated USAGE.md to match current pytest-only implementation
+- Updated USAGE.md to clarify the action installs pytest and runs tests (not automatic detection)
 - Updated QUICK_START.md to reflect actual badge generation workflow
+- Updated IMPLEMENTATION_SUMMARY.md to accurately reflect pytest-only implementation
 - Fixed CONTRIBUTING.md references from "Python Linting Action" to "Python Testing Action"
 - Fixed clone path in CONTRIBUTING.md from "python-linting" to "python-testing"
 - Removed documentation for non-existent inputs: unittest-options, nose-options, behave-options,
