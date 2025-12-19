@@ -20,7 +20,7 @@ We take the security of this GitHub Action seriously. If you discover a security
 Instead, please report them via email to:
 
 - **Email**: [jason.miller@thoughtparameters.com](mailto:jason.miller@thoughtparameters.com)
-- **Subject**: Security Vulnerability in python-testing action
+- **Subject**: Security Vulnerability in python-unit-testing action
 
 ### What to Include
 

@@ -1,4 +1,4 @@
-# Python Testing Action - Implementation Summary
+# Python Unit Testing Action - Implementation Summary
 
 ## Overview
 
@@ -30,7 +30,7 @@ SVG badges can be generated showing:
 ## File Structure
 
 ```
-python-testing/
+python-unit-testing/
 ├── action.yml                      # Main action definition
 ├── README.md                       # User-facing documentation
 ├── CHANGELOG.md                    # Version history
@@ -123,19 +123,19 @@ All validations passed successfully:
 
 ### Basic Usage
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
 ```
 
 ### With Badge Generation
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     commit-badges: 'true'
 ```
 
 ### Advanced Configuration
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     python-version: '3.11'
     requirements-file: 'requirements-dev.txt'
@@ -185,7 +185,7 @@ Potential improvements for future versions:
 ## Support
 
 For issues, questions, or contributions:
-- GitHub Issues: https://github.com/thoughtparametersllc/python-testing/issues
+- GitHub Issues: https://github.com/thoughtparametersllc/python-unit-testing/issues
 - Documentation: See README.md and USAGE.md
 - Examples: See `.github/workflows/` and `examples/`
 

@@ -1,7 +1,7 @@
-# python-testing
+# python-unit-testing
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Python%20Testing-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=github)](https://github.com/marketplace/actions/python-testing)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Python%20Unit%20Testing-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=github)](https://github.com/marketplace/actions/python-unit-testing)
 
 GitHub Action to run Python tests using pytest.
 
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Run Python Tests
-        uses: thoughtparametersllc/python-testing@v1  # or @<commit-sha> before first release
+        uses: thoughtparametersllc/python-unit-testing@v1  # or @<commit-sha> before first release
 ```
 
 ### Advanced Example with All Options
@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Run Python Tests
-        uses: thoughtparametersllc/python-testing@v1
+        uses: thoughtparametersllc/python-unit-testing@v1
         with:
           python-version: '3.11'
           requirements-file: 'requirements.txt'
@@ -71,7 +71,7 @@ Enable badge generation to automatically create SVG badges for pytest:
 
 ```yaml
 - name: Run Python Tests
-  uses: thoughtparametersllc/python-testing@v1
+  uses: thoughtparametersllc/python-unit-testing@v1
   with:
     commit-badges: 'true'
     badges-directory: '.github/badges'
@@ -111,7 +111,7 @@ The action installs pytest and runs your tests with the specified options. You c
 ### pytest Project with Coverage
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: '--cov=mypackage --cov-report=xml'
 ```
@@ -119,7 +119,7 @@ The action installs pytest and runs your tests with the specified options. You c
 ### With Custom Requirements
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     requirements-file: 'requirements-dev.txt'
     pytest-options: '--verbose'
@@ -128,7 +128,7 @@ The action installs pytest and runs your tests with the specified options. You c
 ### With Badge Generation
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: '--verbose'
     commit-badges: 'true'
@@ -181,4 +181,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 If you encounter any issues or have questions, please
-[open an issue](https://github.com/thoughtparametersllc/python-testing/issues) on GitHub.
+[open an issue](https://github.com/thoughtparametersllc/python-unit-testing/issues) on GitHub.

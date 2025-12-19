@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get started with Python Testing Action in minutes!
+Get started with Python Unit Testing Action in minutes!
 
 ## 1. Basic Setup (2 minutes)
 
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
 ```
 
 Commit and push. Done! 🎉
@@ -35,7 +35,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
         with:
           commit-badges: 'true'
 ```
@@ -51,7 +51,7 @@ Then add badge to your README manually:
 Add pytest-specific options:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     python-version: '3.11'
     requirements-file: 'requirements.txt'
@@ -79,4 +79,4 @@ Add pytest-specific options:
 ## Need Help?
 
 - See [Troubleshooting](USAGE.md#troubleshooting) section
-- [Open an issue](https://github.com/thoughtparametersllc/python-testing/issues)
+- [Open an issue](https://github.com/thoughtparametersllc/python-unit-testing/issues)

@@ -1,4 +1,4 @@
-# Contributing to Python Testing Action
+# Contributing to Python Unit Testing Action
 
 First off, thank you for considering contributing to this project! It's people like you that make the
 open-source community such an amazing place to learn, inspire, and create. Any contributions you make are
@@ -10,8 +10,8 @@ open-source community such an amazing place to learn, inspire, and create. Any c
 2. **Clone your fork** locally:
 
     ```bash
-    git clone https://github.com/your-username/python-testing.git
-    cd python-testing
+    git clone https://github.com/your-username/python-unit-testing.git
+    cd python-unit-testing
     ```
 
 3. **Create a new branch** for your feature or fix:

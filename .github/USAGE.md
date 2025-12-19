@@ -1,6 +1,6 @@
-# Python Testing Action - Usage Guide
+# Python Unit Testing Action - Usage Guide
 
-This guide provides detailed information on using the Python Testing GitHub Action.
+This guide provides detailed information on using the Python Unit Testing GitHub Action.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
 ```
 
 That's it! The action will install pytest and run your tests.
@@ -39,7 +39,7 @@ The action installs and runs pytest with your specified options.
 
 **Example configuration:**
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: '--cov=mypackage --cov-report=xml'
 ```
@@ -51,7 +51,7 @@ The action installs and runs pytest with your specified options.
 Specify the Python version to use:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     python-version: '3.11'
 ```
@@ -61,7 +61,7 @@ Specify the Python version to use:
 Install additional dependencies before running tests:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     requirements-file: 'requirements-dev.txt'
 ```
@@ -71,7 +71,7 @@ Install additional dependencies before running tests:
 Pass custom options to pytest:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: '--cov --cov-report=xml --maxfail=1'
 ```
@@ -92,7 +92,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
         with:
           commit-badges: 'true'
           badges-directory: '.github/badges'
@@ -124,7 +124,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
         with:
           python-version: ${{ matrix.python-version }}
 ```
@@ -145,7 +145,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      - uses: thoughtparametersllc/python-testing@v1
+      - uses: thoughtparametersllc/python-unit-testing@v1
         with:
           python-version: ${{ matrix.python-version }}
 ```
@@ -155,7 +155,7 @@ jobs:
 Generate coverage reports with pytest:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: '--cov=mypackage --cov-report=xml --cov-report=html'
 
@@ -170,7 +170,7 @@ Generate coverage reports with pytest:
 Run different options on different branches:
 
 ```yaml
-- uses: thoughtparametersllc/python-testing@v1
+- uses: thoughtparametersllc/python-unit-testing@v1
   with:
     pytest-options: ${{ github.ref == 'refs/heads/main' && '--cov --slow' || '--fast' }}
 ```
@@ -238,4 +238,4 @@ See the [.github/workflows/](./../workflows/) directory for example workflow con
 If you need help:
 - Check the [README](../../README.md)
 - Review [example workflows](./../workflows/)
-- [Open an issue](https://github.com/thoughtparametersllc/python-testing/issues)
+- [Open an issue](https://github.com/thoughtparametersllc/python-unit-testing/issues)
