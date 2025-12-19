@@ -56,7 +56,8 @@ python-testing/
 
 1. **Setup Python** - Uses `actions/setup-python@v5` to set up Python environment
 2. **Install pytest** - Installs pytest from PyPI
-3. **Install Requirements** - Installs packages from requirements file if the file exists
+3. **Install Requirements** - Optionally installs packages from a specified requirements file if it exists;
+   if a path is provided but the file is missing, logs a warning and continues without installing
 4. **Run Tests** - Executes pytest with configurable options
 5. **Report Results** - Outputs results to GitHub Actions summary
 6. **Generate Badges** - Creates SVG badges for test status (optional)
