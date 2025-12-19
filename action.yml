@@ -1,5 +1,5 @@
-name: Python Testing
-description: A GitHub Action to run Python tests using pytest, generate SVG badges for test results, and optionally commit the badges to the repository.
+name: Python Unit Testing
+description: A GitHub Action to run Python tests using pytest and optionally commit the badges to the repository.
 author: Jason Miller
 
 branding:
