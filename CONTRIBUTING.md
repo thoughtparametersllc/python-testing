@@ -1,6 +1,8 @@
-# Contributing to Python Linting Action
+# Contributing to Python Testing Action
 
-First off, thank you for considering contributing to this project\! It's people like you that make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+First off, thank you for considering contributing to this project! It's people like you that make the
+open-source community such an amazing place to learn, inspire, and create. Any contributions you make are
+**greatly appreciated**.
 
 ## 🚀 Getting Started
 
@@ -9,7 +11,7 @@ First off, thank you for considering contributing to this project\! It's people 
 
     ```bash
     git clone https://github.com/your-username/python-testing.git
-    cd python-linting
+    cd python-testing
     ```
 
 3. **Create a new branch** for your feature or fix:
@@ -22,7 +24,8 @@ First off, thank you for considering contributing to this project\! It's people 
 
 ### Coding Standards
 
-We want to keep the codebase clean and consistent. Before submitting your code, please ensure it passes the same quality checks that this Action enforces:
+We want to keep the codebase clean and consistent. Before submitting your code, please ensure it passes
+the same quality checks that this Action enforces:
 
 * **Linting:** We use [yamllint](https://github.com/adrienverge/yamllint)
 * **Unit Testing:** We use [pytest](https://docs.pytest.org/en/stable/).
@@ -59,7 +62,8 @@ pytest .
 
 ## 🔄 Release Process (For Maintainers)
 
-This repository uses a specific workflow to handle semantic versioning and "floating tags" (e.g., keeping `v1` pointing to the latest `v1.x.x` release).
+This repository uses a specific workflow to handle semantic versioning and "floating tags"
+(e.g., keeping `v1` pointing to the latest `v1.x.x` release).
 
 ### Automated Release
 
@@ -71,7 +75,8 @@ When a PR is merged to `main` with a valid `CHANGELOG.md` entry:
 
 ### Manual Release / Tag Correction
 
-If you need to manually retarget the major version tag (e.g., `v1`) to a specific release (e.g., `v1.0.1`), use the following commands locally:
+If you need to manually retarget the major version tag (e.g., `v1`) to a specific release (e.g., `v1.0.1`),
+use the following commands locally:
 
 ```bash
 # 1. Delete the old major version tag locally and remotely

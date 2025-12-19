@@ -7,28 +7,23 @@ GitHub Action to automatically detect and run Python testing frameworks.
 
 ## Features
 
-- 🔍 **Automatic Framework Detection** - Automatically detects which testing frameworks your project uses
-- 🐍 **Multiple Framework Support** - Supports pytest, unittest, nose2, behave (BDD/Cucumber), tox, and doctest
+- 🐍 **pytest Testing** - Run pytest tests with configurable options
 - 📦 **Custom requirements** - Install additional dependencies from a requirements file
-- 📊 **Detailed reporting** - View results in GitHub Actions summary for each detected framework
+- 📊 **Detailed reporting** - View test results in GitHub Actions summary
 - 🏷️ **SVG badge generation** - Automatically generate and commit testing badges to your repository
-- 📝 **Automatic README updates** - Automatically insert badge references into your README.md
-- 🎯 **Framework-specific options** - Pass custom options to each testing framework
+- 🎯 **Framework-specific options** - Pass custom options to pytest
 
-## Supported Testing Frameworks
+## Supported Testing Framework
 
-| Framework | Detection Method | Notes |
-|-----------|------------------|-------|
-| **pytest** | `pytest.ini`, `pyproject.toml`, `setup.cfg`, or `import pytest` in code | Most popular Python testing framework |
-| **unittest** | `import unittest` in test files | Built-in Python testing framework |
-| **nose2** | `.noserc`, `nose.cfg`, or `[nosetests]` in `setup.cfg` | Successor to nose |
-| **behave** | `features/` directory with `.feature` files | BDD/Cucumber-style testing |
-| **tox** | `tox.ini` file | Testing across multiple Python environments |
-| **doctest** | `>>>` in Python files | Tests embedded in docstrings |
+| Framework  | Detection Method                   | Notes                                 |
+|------------|------------------------------------|------------------------------ --------|
+| **pytest** | Always runs if pytest is installed | Most popular Python testing framework |
 
 ## Usage
 
-> **Note:** Until the first release is tagged, use a specific commit SHA (e.g., `@947908a`) instead of `@v1`. This ensures workflows continue to work even if development branches are deleted. Once v1.0.0 is released, you can use `@v1` for the latest v1.x version.
+> **Note:** Until the first release is tagged, use a specific commit SHA (e.g., `@947908a`) instead of
+`@v1`. This ensures workflows continue to work even if development branches are deleted. Once v1.0.0 is
+released, you can use `@v1` for the latest v1.x version.
 
 ### Basic Example
 
@@ -66,31 +61,23 @@ jobs:
           python-version: '3.11'
           requirements-file: 'requirements.txt'
           pytest-options: '--cov --cov-report=xml'
-          unittest-options: '-s tests'
-          nose-options: '--verbose'
-          behave-options: '--no-capture'
-          tox-options: '-e py311'
-          generate-badges: 'true'
+          commit-badges: 'true'
           badges-directory: '.github/badges'
-          update-readme: 'true'
-          readme-path: 'README.md'
-          badge-style: 'path'
 ```
 
 ### With Badge Generation
 
-Enable badge generation to automatically create SVG badges for each detected framework:
+Enable badge generation to automatically create SVG badges for pytest:
 
 ```yaml
 - name: Run Python Tests
   uses: thoughtparametersllc/python-testing@v1
   with:
-    generate-badges: 'true'
-    update-readme: 'true'
-    badge-style: 'path'  # or 'url' for GitHub raw URLs
+    commit-badges: 'true'
+    badges-directory: '.github/badges'
 ```
 
-When enabled, badges will show passing/failing status for each framework.
+When enabled, badges will show passing/failing status for pytest.
 
 **Note:** For badge commits to work, your workflow needs `contents: write` permission:
 
@@ -101,37 +88,27 @@ permissions:
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `python-version` | Python version to use for testing | No | `3.x` |
-| `requirements-file` | Path to requirements file for additional dependencies | No | `''` |
-| `pytest-options` | Additional options to pass to pytest | No | `''` |
-| `unittest-options` | Additional options to pass to unittest | No | `''` |
-| `nose-options` | Additional options to pass to nose2 | No | `''` |
-| `behave-options` | Additional options to pass to behave | No | `''` |
-| `tox-options` | Additional options to pass to tox | No | `''` |
-| `generate-badges` | Generate and commit SVG badges to the repository | No | `false` |
-| `badges-directory` | Directory where badge SVG files will be saved | No | `.github/badges` |
-| `update-readme` | Automatically update README.md with badge references | No | `false` |
-| `readme-path` | Path to README.md file to update with badges | No | `README.md` |
-| `badge-style` | Badge style: 'url' for GitHub URLs or 'path' for relative paths | No | `path` |
+| Input                | Description                                           | Required | Default           |
+|----------------------|-------------------------------------------------------|----------|-------------------|
+| `python-version`     | Python version to use for testing                     | No       | `3.x`             |
+| `requirements-file`  | Path to requirements file for additional dependencies | No       | `requirements.txt`|
+| `pytest-options`     | Additional options to pass to pytest                  | No       | `''`              |
+| `commit-badges`      | Generate and commit SVG badges to the repository      | No       | `false`           |
+| `badges-directory`   | Directory where badge SVG files will be saved         | No       | `.github/badges`  |
 
-## How Framework Detection Works
+## How It Works
 
-The action intelligently detects which testing frameworks are used in your project:
+The action installs pytest and runs your tests with the specified options. You can:
 
-1. **pytest**: Looks for `pytest.ini`, `pyproject.toml`, `setup.cfg`, or `import pytest` statements
-2. **unittest**: Searches for `import unittest` in test files
-3. **nose2**: Checks for `.noserc`, `nose.cfg`, or nose configuration in `setup.cfg`
-4. **behave**: Detects `features/` directory containing `.feature` files
-5. **tox**: Looks for `tox.ini` configuration file
-6. **doctest**: Searches for `>>>` patterns indicating docstring tests
-
-Only detected frameworks will be installed and run.
+1. Specify a Python version to use
+2. Install additional requirements from a requirements file
+3. Pass custom options to pytest
+4. Generate SVG badges for test results
+5. Automatically commit badges to your repository
 
 ## Examples
 
-### pytest Project
+### pytest Project with Coverage
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
@@ -139,58 +116,42 @@ Only detected frameworks will be installed and run.
     pytest-options: '--cov=mypackage --cov-report=xml'
 ```
 
-### Multiple Frameworks
-
-The action will automatically run all detected frameworks:
+### With Custom Requirements
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
   with:
     requirements-file: 'requirements-dev.txt'
     pytest-options: '--verbose'
-    behave-options: '--tags=@smoke'
 ```
 
-### BDD with Behave
+### With Badge Generation
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
   with:
-    behave-options: '--format=progress --tags=@automated'
-    generate-badges: 'true'
+    pytest-options: '--verbose'
+    commit-badges: 'true'
 ```
 
 ## Badge Display
 
-When `update-readme` is enabled, badges are automatically inserted after your README title:
+When `commit-badges` is enabled, you can manually add badge references to your README:
 
 ```markdown
 # My Project
 
-<!-- testing-badges-start -->
 ![Pytest](.github/badges/pytest.svg)
-![Unittest](.github/badges/unittest.svg)
-<!-- testing-badges-end -->
 ```
 
-Manual badge references (if not using `update-readme`):
-
-```markdown
-![Pytest](.github/badges/pytest.svg)
-![Unittest](.github/badges/unittest.svg)
-![Nose2](.github/badges/nose2.svg)
-![Behave](.github/badges/behave.svg)
-![Tox](.github/badges/tox.svg)
-![Doctest](.github/badges/doctest.svg)
-```
+The badge will automatically update with passing/failing status after each test run.
 
 ## Roadmap
 
 Future enhancements planned:
 
-- **Automated versioning and tagging** - Semantic versioning with automated tag creation
-- **GitHub Marketplace publishing** - Automated publishing workflow for releases
-- **Additional frameworks** - Support for robotframework, green, testify, Ward
+- **Additional frameworks** - Support for unittest, nose2, behave (BDD), tox, doctest
+- **Automatic README updates** - Auto-insert badge references in README
 - **Enhanced reporting** - Code coverage integration, test timing analysis
 - **Performance optimization** - Parallel test execution, dependency caching
 
@@ -214,8 +175,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Related Actions
 
-- [python-linting](https://github.com/thoughtparametersllc/python-linting) - Companion action for Python linting with pylint, black, and mypy
+- [python-linting](https://github.com/thoughtparametersllc/python-linting) - Companion action for Python
+  linting with pylint, black, and mypy
 
 ## Support
 
-If you encounter any issues or have questions, please [open an issue](https://github.com/thoughtparametersllc/python-testing/issues) on GitHub.
+If you encounter any issues or have questions, please
+[open an issue](https://github.com/thoughtparametersllc/python-testing/issues) on GitHub.

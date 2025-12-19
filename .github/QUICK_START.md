@@ -37,15 +37,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: thoughtparametersllc/python-testing@v1
         with:
-          generate-badges: 'true'
-          update-readme: 'true'
+          commit-badges: 'true'
 ```
 
-Badges will automatically appear in your README! 🏷️
+Then add badge to your README manually:
+
+```markdown
+![Pytest](.github/badges/pytest.svg)
+```
 
 ## 3. With Custom Options (10 minutes)
 
-Add framework-specific options:
+Add pytest-specific options:
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
@@ -53,26 +56,19 @@ Add framework-specific options:
     python-version: '3.11'
     requirements-file: 'requirements.txt'
     pytest-options: '--cov --cov-report=xml'
-    behave-options: '--format=progress'
 ```
 
 ## What Happens Automatically?
 
-✅ Detects your testing frameworks  
-✅ Installs necessary dependencies  
-✅ Runs all detected tests  
+✅ Installs pytest  
+✅ Installs your requirements  
+✅ Runs pytest tests  
 ✅ Generates detailed reports  
 ✅ Creates status badges (if enabled)  
-✅ Updates README (if enabled)  
 
-## Supported Frameworks
+## Supported Framework
 
 - **pytest** - Most popular Python testing framework
-- **unittest** - Built-in Python testing
-- **nose2** - Enhanced testing
-- **behave** - BDD/Cucumber-style testing
-- **tox** - Multi-environment testing
-- **doctest** - Documentation testing
 
 ## Next Steps
 

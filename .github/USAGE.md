@@ -29,17 +29,13 @@ jobs:
 
 That's it! The action will automatically detect and run your testing frameworks.
 
-## Framework Detection
+## Testing Framework
 
-The action automatically detects which testing frameworks your project uses:
+This action runs pytest for your Python tests.
 
 ### pytest
 
-Detected if any of these exist:
-- `pytest.ini` file
-- `pyproject.toml` file
-- `setup.cfg` file
-- `import pytest` in any Python file
+The action installs and runs pytest with your specified options.
 
 **Example configuration:**
 ```yaml
@@ -47,61 +43,6 @@ Detected if any of these exist:
   with:
     pytest-options: '--cov=mypackage --cov-report=xml'
 ```
-
-### unittest
-
-Detected if:
-- `import unittest` found in test files (test*.py or *test.py)
-
-**Example configuration:**
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    unittest-options: '-v -s tests'
-```
-
-### nose2
-
-Detected if any of these exist:
-- `.noserc` file
-- `nose.cfg` file
-- `[nosetests]` section in `setup.cfg`
-
-**Example configuration:**
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    nose-options: '--verbose --with-coverage'
-```
-
-### behave (BDD/Cucumber)
-
-Detected if:
-- `features/` directory exists with `.feature` files
-
-**Example configuration:**
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    behave-options: '--format=progress --tags=@automated'
-```
-
-### tox
-
-Detected if:
-- `tox.ini` file exists
-
-**Example configuration:**
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    tox-options: '-e py311,py312'
-```
-
-### doctest
-
-Detected if:
-- `>>>` patterns found in Python files (indicating docstring tests)
 
 ## Configuration Options
 
@@ -125,18 +66,14 @@ Install additional dependencies before running tests:
     requirements-file: 'requirements-dev.txt'
 ```
 
-### Framework-Specific Options
+### pytest Options
 
-Pass custom options to each testing framework:
+Pass custom options to pytest:
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
   with:
     pytest-options: '--cov --cov-report=xml --maxfail=1'
-    unittest-options: '-v -s tests'
-    nose-options: '--verbose --with-timer'
-    behave-options: '--tags=@smoke --format=pretty'
-    tox-options: '-e py311'
 ```
 
 ## Badge Generation
@@ -157,47 +94,18 @@ jobs:
       
       - uses: thoughtparametersllc/python-testing@v1
         with:
-          generate-badges: 'true'
+          commit-badges: 'true'
           badges-directory: '.github/badges'
 ```
 
-### Automatic README Updates
-
-Automatically insert badge references in your README:
-
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    generate-badges: 'true'
-    update-readme: 'true'
-    readme-path: 'README.md'
-    badge-style: 'path'  # or 'url'
-```
-
-### Badge Styles
-
-Two badge styles are available:
-
-1. **Relative Path** (`badge-style: 'path'`):
-   ```markdown
-   ![Pytest](.github/badges/pytest.svg)
-   ```
-
-2. **GitHub URL** (`badge-style: 'url'`):
-   ```markdown
-   ![Pytest](https://raw.githubusercontent.com/owner/repo/main/.github/badges/pytest.svg)
-   ```
-
 ### Manual Badge Reference
 
-If not using automatic README updates, add badges manually:
+Add badges manually to your README:
 
 ```markdown
 # My Project
 
 ![Pytest](.github/badges/pytest.svg)
-![Unittest](.github/badges/unittest.svg)
-![Behave](.github/badges/behave.svg)
 ```
 
 ## Advanced Usage
@@ -257,19 +165,9 @@ Generate coverage reports with pytest:
     files: ./coverage.xml
 ```
 
-### BDD Testing with Behave
-
-Run specific feature tags:
-
-```yaml
-- uses: thoughtparametersllc/python-testing@v1
-  with:
-    behave-options: '--tags=@smoke,@critical --format=progress'
-```
-
 ### Conditional Testing
 
-Run different frameworks on different branches:
+Run different options on different branches:
 
 ```yaml
 - uses: thoughtparametersllc/python-testing@v1
@@ -278,15 +176,6 @@ Run different frameworks on different branches:
 ```
 
 ## Troubleshooting
-
-### No Frameworks Detected
-
-If no frameworks are detected:
-
-1. Check that your test files are in the repository
-2. Verify framework configuration files exist
-3. Ensure test imports are present in your code
-4. Review the detection summary in the Action output
 
 ### Badge Commit Failures
 
@@ -302,9 +191,9 @@ If badges aren't being committed:
 
 3. Verify the action has access to push to the repository
 
-### Framework Installation Issues
+### Installation Issues
 
-If a framework fails to install:
+If pytest or requirements fail to install:
 
 1. Check that `requirements-file` path is correct
 2. Verify your requirements file has correct syntax
@@ -318,24 +207,17 @@ To debug test failures:
 1. Review the detailed output in the GitHub Actions summary
 2. Run tests locally with the same options
 3. Check for environment-specific issues (paths, dependencies)
-4. Enable verbose output with framework options:
+4. Enable verbose output:
    ```yaml
    pytest-options: '--verbose --tb=long'
-   unittest-options: '-v'
    ```
 
 ### Custom Test Directories
 
 If tests are in a non-standard location:
 
-For pytest:
 ```yaml
 pytest-options: 'path/to/tests/'
-```
-
-For unittest:
-```yaml
-unittest-options: '-s path/to/tests'
 ```
 
 ## Best Practices
